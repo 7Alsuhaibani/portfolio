@@ -1,92 +1,96 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import useAuthStore from '../../hooks/useAuth'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import useAuth from '../../hooks/useAuth'
 import {
-  LayoutDashboard, User, FolderOpen, Share2,
-  LogOut, Star, ShieldCheck, ClipboardList
+  LayoutDashboard, User, FolderGit2, Share2,
+  Eye, LogOut, Users, ChevronRight, Terminal, ClipboardList,
 } from 'lucide-react'
-import clsx from 'clsx'
-
-const navItems = [
-  { to: '/dashboard',  label: 'Dashboard',  icon: LayoutDashboard, roles: ['student','admin','coach'] },
-  { to: '/profile/edit', label: 'My Profile', icon: User,           roles: ['student'] },
-  { to: '/projects',   label: 'Projects',   icon: FolderOpen,       roles: ['student'] },
-  { to: '/share',      label: 'Share',      icon: Share2,           roles: ['student'] },
-  { to: '/reviews',    label: 'Reviews',    icon: ClipboardList,    roles: ['admin','coach'] },
-  { to: '/admin',      label: 'Admin Panel',icon: ShieldCheck,      roles: ['admin'] },
-]
 
 export default function Layout() {
-  const { user, logout } = useAuthStore()
+  const { user, logout, isAdmin } = useAuth()
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  const doLogout = () => { logout(); navigate('/login') }
 
-  const visibleItems = navItems.filter(item => item.roles.includes(user?.role))
+  const links = isAdmin()
+    ? [
+        { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+        { to: '/reviews',   icon: ClipboardList,   label: 'Review Queue' },
+        { to: '/admin',     icon: Users,            label: 'All Portfolios' },
+      ]
+    : [
+        { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+        { to: '/profile/edit', icon: User,            label: 'Profile' },
+        { to: '/projects',     icon: FolderGit2,      label: 'Projects' },
+        { to: '/share',        icon: Share2,           label: 'Share' },
+        { to: '/preview',      icon: Eye,              label: 'Preview' },
+      ]
+
+  const roleColor = { admin: 'text-red-400', coach: 'text-amber-400', student: 'text-blue-400' }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white flex flex-col">
+    <div className="flex h-screen overflow-hidden">
+      {/* ── Sidebar ── */}
+      <aside className="w-52 flex-shrink-0 bg-gray-900 border-r border-gray-800 flex flex-col">
         {/* Logo */}
-        <div className="px-6 py-5 border-b border-gray-800">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-              <Star size={16} className="text-white" />
+        <div className="px-4 py-5 border-b border-gray-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0">
+              <Terminal size={13} className="text-white" />
             </div>
             <div>
-              <p className="font-bold text-sm">Portfolio</p>
-              <p className="text-xs text-gray-400">WeCloudData</p>
+              <p className="text-sm font-bold text-gray-100 leading-none">PortfolioHub</p>
+              <p className="text-[9px] font-mono text-gray-600 mt-0.5">WeCloudData</p>
             </div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {visibleItems.map(({ to, label, icon: Icon }) => (
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+          <p className="px-2 mb-2 text-[9px] font-mono font-semibold text-gray-700 uppercase tracking-widest">
+            Navigation
+          </p>
+          {links.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
-              className={({ isActive }) =>
-                clsx(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary-600 text-white'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                )
-              }
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             >
-              <Icon size={18} />
-              {label}
+              {({ isActive }) => (
+                <>
+                  <Icon size={14} />
+                  <span className="flex-1 text-sm">{label}</span>
+                  {isActive && <ChevronRight size={11} className="text-blue-500" />}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
 
-        {/* User */}
+        {/* User footer */}
         <div className="px-3 py-4 border-t border-gray-800">
-          <div className="flex items-center gap-3 px-3 py-2 mb-2">
-            <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-sm font-bold">
-              {user?.full_name?.[0] || 'U'}
+          <div className="flex items-center gap-2.5 px-2">
+            <div className="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs font-bold text-gray-300 flex-shrink-0">
+              {user?.username?.[0]?.toUpperCase()}
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium truncate">{user?.full_name}</p>
-              <p className="text-xs text-gray-400 capitalize">{user?.role}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-300 truncate">{user?.username}</p>
+              <p className={`text-[10px] font-mono ${roleColor[user?.role] || 'text-gray-500'}`}>
+                {user?.role}
+              </p>
             </div>
+            <button
+              onClick={doLogout}
+              title="Logout"
+              className="text-gray-600 hover:text-red-400 transition-colors"
+            >
+              <LogOut size={14} />
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
-          >
-            <LogOut size={18} />
-            Logout
-          </button>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-auto">
+      {/* ── Main ── */}
+      <main className="flex-1 overflow-y-auto bg-gray-950">
         <Outlet />
       </main>
     </div>

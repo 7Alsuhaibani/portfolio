@@ -1,179 +1,124 @@
+// ─── SharePage ──────────────────────────────────────────────────────────────
 import { useState, useEffect } from 'react'
-import api from '../utils/api'
 import toast from 'react-hot-toast'
-import { Copy, Plus, Trash2, Eye, Link, Clock, CheckCircle } from 'lucide-react'
+import api from '../utils/api'
+import { Copy, RefreshCw, ExternalLink, Send, CheckCircle, Clock, AlertCircle } from 'lucide-react'
 
-export default function SharePage() {
-  const [links, setLinks]     = useState([])
-  const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const [expires, setExpires] = useState('')
+export function SharePage() {
+  const [profile, setProfile]   = useState(null)
+  const [loading, setLoading]   = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [copied, setCopied]     = useState(false)
 
-  const load = async () => {
+  useEffect(() => {
+    api.get('/profile/me').then(r => setProfile(r.data)).finally(() => setLoading(false))
+  }, [])
+
+  const url = profile ? `${window.location.origin}/portfolio/${profile.share_token}` : ''
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(url)
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
+    toast.success('Copied!')
+  }
+
+  const regen = async () => {
+    if (!confirm('Old link will stop working. Continue?')) return
+    const r = await api.post('/profile/me/share-token')
+    setProfile(r.data); toast.success('New link generated')
+  }
+
+  const submit = async () => {
+    setSubmitting(true)
     try {
-      const { data } = await api.get('/share/links')
-      setLinks(data)
-    } finally {
-      setLoading(false)
-    }
+      await api.post('/reviews/submit-for-review')
+      setProfile(p => ({ ...p, review_status: 'ready' }))
+      toast.success('Submitted for review!')
+    } catch (e) { toast.error(e.response?.data?.detail || 'Failed') }
+    finally { setSubmitting(false) }
   }
 
-  useEffect(() => { load() }, [])
+  if (loading) return <div className="page-spinner"><div className="spinner" /></div>
 
-  const create = async () => {
-    setCreating(true)
-    try {
-      const payload = {}
-      if (expires) payload.expires_at = new Date(expires).toISOString()
-      const { data } = await api.post('/share/links', payload)
-      setLinks(l => [data, ...l])
-      setExpires('')
-      toast.success('Shareable link created!')
-    } catch (err) {
-      toast.error(err.response?.data?.detail || 'Failed to create link')
-    } finally {
-      setCreating(false)
-    }
+  const STATUS_MAP = {
+    draft:          { Icon: Clock,         color: 'text-gray-500',    msg: 'Complete your profile then submit for review.' },
+    ready:          { Icon: Clock,         color: 'text-amber-400',   msg: 'Waiting for coach review.' },
+    needs_revision: { Icon: AlertCircle,   color: 'text-red-400',     msg: 'Coach requested revisions. Update and resubmit.' },
+    published:      { Icon: CheckCircle,   color: 'text-emerald-400', msg: 'Published! Ready to share with employers.' },
   }
-
-  const deactivate = async (id) => {
-    try {
-      await api.delete(`/share/links/${id}`)
-      setLinks(l => l.map(x => x.id === id ? { ...x, is_active: false } : x))
-      toast.success('Link deactivated')
-    } catch {
-      toast.error('Failed to deactivate')
-    }
-  }
-
-  const copyLink = (token) => {
-    const url = `${window.location.origin}/portfolio/${token}`
-    navigator.clipboard.writeText(url)
-    toast.success('Link copied to clipboard!')
-  }
-
-  const isExpired = (link) =>
-    link.expires_at && new Date(link.expires_at) < new Date()
-
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full" />
-    </div>
-  )
+  const sm = STATUS_MAP[profile?.review_status] || STATUS_MAP.draft
+  const SIcon = sm.Icon
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Share Portfolio</h1>
-        <p className="text-gray-500 mt-1">Generate private links to share with employers</p>
-      </div>
+    <div className="p-8 max-w-3xl">
+      <p className="section-comment">// portfolio.share()</p>
+      <h1 className="page-title mb-8">Share Portfolio</h1>
 
-      {/* Create new link */}
-      <div className="card mb-6">
-        <h2 className="font-semibold text-gray-900 mb-4">Generate New Link</h2>
-        <div className="flex items-end gap-3">
-          <div className="flex-1">
-            <label className="label">Expiration Date (optional)</label>
-            <input
-              type="datetime-local"
-              className="input"
-              value={expires}
-              onChange={e => setExpires(e.target.value)}
-              min={new Date().toISOString().slice(0, 16)}
-            />
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="card">
+          <div className="card-head"><span className="card-comment">// private_share_link</span></div>
+          <div className="card-body">
+            <div className="flex items-center gap-2 p-3 bg-gray-800 border border-gray-700 rounded-lg mb-3 overflow-hidden">
+              <span className="text-[11px] font-mono text-gray-500 truncate flex-1">{url}</span>
+            </div>
+            <div className="flex gap-2 mb-3">
+              <button onClick={copy} className="btn-secondary btn-sm flex-1 justify-center">
+                {copied ? <CheckCircle size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+              <a href={url} target="_blank" rel="noopener noreferrer" className="btn-primary btn-sm justify-center">
+                <ExternalLink size={12} /> Open
+              </a>
+            </div>
+            <button onClick={regen} className="btn-ghost w-full justify-center btn-xs text-gray-600">
+              <RefreshCw size={11} /> Regenerate link
+            </button>
+            <p className="text-center text-[10px] text-gray-700 font-mono mt-2">
+              // token-based private access
+            </p>
           </div>
-          <button
-            onClick={create}
-            disabled={creating}
-            className="btn-primary flex items-center gap-2 py-2.5"
-          >
-            <Plus size={18} />
-            {creating ? 'Creating...' : 'Generate Link'}
-          </button>
+        </div>
+
+        <div className="card">
+          <div className="card-head"><span className="card-comment">// review_status</span></div>
+          <div className="card-body">
+            <div className="flex items-center gap-2.5 mb-3">
+              <SIcon size={15} className={sm.color} />
+              <span className={`text-sm font-mono font-semibold ${sm.color}`}>
+                {profile?.review_status?.replace('_', ' ').toUpperCase()}
+              </span>
+            </div>
+            <p className="text-xs text-gray-600 mb-5 leading-relaxed">{sm.msg}</p>
+            {['draft', 'needs_revision'].includes(profile?.review_status) && (
+              <button onClick={submit} disabled={submitting} className="btn-primary w-full justify-center btn-sm">
+                {submitting
+                  ? <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"/>
+                  : <Send size={12} />}
+                {submitting ? 'Submitting...' : 'Submit for Review'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Links list */}
-      <div className="space-y-4">
-        {links.length === 0 && (
-          <div className="card text-center py-10 text-gray-500">
-            <Link size={36} className="mx-auto mb-3 text-gray-300" />
-            <p>No shareable links yet. Generate your first one above!</p>
-          </div>
-        )}
-
-        {links.map(link => {
-          const url = `${window.location.origin}/portfolio/${link.token}`
-          const expired = isExpired(link)
-          const active = link.is_active && !expired
-
-          return (
-            <div
-              key={link.id}
-              className={`card ${!active ? 'opacity-60' : ''}`}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    {active
-                      ? <span className="badge bg-green-100 text-green-700 flex items-center gap-1">
-                          <CheckCircle size={11} /> Active
-                        </span>
-                      : expired
-                        ? <span className="badge bg-orange-100 text-orange-700 flex items-center gap-1">
-                            <Clock size={11} /> Expired
-                          </span>
-                        : <span className="badge bg-gray-100 text-gray-500">Inactive</span>
-                    }
-                    <span className="flex items-center gap-1 text-xs text-gray-500">
-                      <Eye size={12} /> {link.view_count} views
-                    </span>
-                  </div>
-
-                  <p className="text-sm font-mono text-gray-700 truncate mb-1">{url}</p>
-
-                  <div className="flex items-center gap-4 text-xs text-gray-400">
-                    <span>Created: {new Date(link.created_at).toLocaleDateString()}</span>
-                    {link.expires_at && (
-                      <span>Expires: {new Date(link.expires_at).toLocaleDateString()}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 ml-4">
-                  {active && (
-                    <>
-                      <button
-                        onClick={() => copyLink(link.token)}
-                        className="btn-secondary flex items-center gap-1.5 text-sm py-1.5 px-3"
-                      >
-                        <Copy size={14} /> Copy
-                      </button>
-                      <a
-                        href={`/portfolio/${link.token}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-secondary flex items-center gap-1.5 text-sm py-1.5 px-3"
-                      >
-                        <Eye size={14} /> Preview
-                      </a>
-                    </>
-                  )}
-                  {active && (
-                    <button
-                      onClick={() => deactivate(link.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-                      title="Deactivate"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              </div>
+      <div className="card">
+        <div className="card-head"><span className="card-comment">// sharing_tips[]</span></div>
+        <div className="card-body grid grid-cols-3 gap-3">
+          {[
+            { icon: '📧', title: 'Email Signature', tip: 'Add "Portfolio: [link]" to your email footer' },
+            { icon: '💼', title: 'LinkedIn Bio',    tip: 'Paste the link in your LinkedIn About section' },
+            { icon: '📄', title: 'Resume',          tip: 'Include next to your contact information' },
+          ].map(item => (
+            <div key={item.title} className="p-3.5 bg-gray-850 border border-gray-800 rounded-lg">
+              <span className="text-lg mb-2 block">{item.icon}</span>
+              <p className="text-xs font-semibold text-gray-300 mb-1">{item.title}</p>
+              <p className="text-[11px] text-gray-600 leading-relaxed">{item.tip}</p>
             </div>
-          )
-        })}
+          ))}
+        </div>
       </div>
     </div>
   )
 }
+
+export default SharePage

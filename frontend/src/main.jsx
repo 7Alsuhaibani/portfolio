@@ -12,8 +12,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Toaster
         position="top-right"
         toastOptions={{
-          duration: 3000,
-          style: { borderRadius: '10px', fontSize: '14px' },
+          style: {
+            background: '#181b27',
+            border: '1px solid #252839',
+            color: '#d1d5db',
+            fontSize: '13px',
+            borderRadius: '8px',
+          },
         }}
       />
     </BrowserRouter>

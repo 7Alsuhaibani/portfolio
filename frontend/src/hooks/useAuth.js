@@ -1,14 +1,12 @@
 import { create } from 'zustand'
 import api from '../utils/api'
 
-const useAuthStore = create((set, get) => ({
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
+const useAuth = create((set, get) => ({
+  user:  JSON.parse(localStorage.getItem('user')  || 'null'),
   token: localStorage.getItem('token') || null,
-  loading: false,
 
+  // Backend login expects OAuth2 form data, then we fetch /auth/me for user object
   login: async (email, password) => {
-    set({ loading: true })
-    // Backend expects OAuth2 form data
     const form = new URLSearchParams()
     form.append('username', email)
     form.append('password', password)
@@ -16,26 +14,22 @@ const useAuthStore = create((set, get) => ({
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     })
     localStorage.setItem('token', data.access_token)
-    // Fetch user profile after login
     api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-    const meRes = await api.get('/auth/me')
-    const user = meRes.data
-    localStorage.setItem('user', JSON.stringify(user))
-    set({ user, token: data.access_token, loading: false })
-    return user
+    const me = await api.get('/auth/me')
+    localStorage.setItem('user', JSON.stringify(me.data))
+    set({ user: me.data, token: data.access_token })
+    return me.data
   },
 
+  // Backend register expects { email, username, password, role }
   register: async (email, password, username, role = 'student') => {
-    set({ loading: true })
-    // Backend UserCreate: {email, username, password, role}
     const { data } = await api.post('/auth/register', { email, username, password, role })
     localStorage.setItem('token', data.access_token)
     api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-    const meRes = await api.get('/auth/me')
-    const user = meRes.data
-    localStorage.setItem('user', JSON.stringify(user))
-    set({ user, token: data.access_token, loading: false })
-    return user
+    const me = await api.get('/auth/me')
+    localStorage.setItem('user', JSON.stringify(me.data))
+    set({ user: me.data, token: data.access_token })
+    return me.data
   },
 
   logout: () => {
@@ -46,9 +40,8 @@ const useAuthStore = create((set, get) => ({
   },
 
   isAuthenticated: () => !!get().token,
-  isAdmin: () => get().user?.role === 'admin',
-  isCoach: () => get().user?.role === 'coach',
-  isStudent: () => get().user?.role === 'student',
+  isAdmin:  () => ['admin', 'coach'].includes(get().user?.role),
+  isStudent:() => get().user?.role === 'student',
 }))
 
-export default useAuthStore
+export default useAuth

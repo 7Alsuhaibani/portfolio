@@ -1,287 +1,242 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../utils/api'
-import {
-  MapPin, Mail, Github, Linkedin, Globe, ExternalLink,
-  Star, FileText, ChevronDown, ChevronUp
-} from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { MapPin, Mail, Github, Linkedin, ExternalLink, Download, Star, X, Terminal } from 'lucide-react'
 
-function MarkdownView({ content }) {
-  if (!content) return null
-  // Simple markdown to HTML (for full support use react-markdown)
-  const html = content
-    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold text-gray-900 mt-5 mb-2">$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3 class="text-base font-semibold text-gray-800 mt-4 mb-1">$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>')
-    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc">$1</li>')
-    .replace(/\n\n/g, '</p><p class="mb-2">')
-  return (
-    <div
-      className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
-      dangerouslySetInnerHTML={{ __html: `<p class="mb-2">${html}</p>` }}
-    />
-  )
-}
-
-function ProjectCard({ project }) {
-  const [expanded, setExpanded] = useState(false)
-
-  return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              {project.is_featured && (
-                <Star size={14} className="text-yellow-500 fill-yellow-500" />
-              )}
-              <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
-            </div>
-            {(project.role || project.duration) && (
-              <p className="text-sm text-gray-500 mt-0.5">
-                {[project.role, project.duration].filter(Boolean).join(' · ')}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {project.github_url && (
-              <a href={project.github_url} target="_blank" rel="noreferrer"
-                 className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5">
-                <Github size={14} /> GitHub
-              </a>
-            )}
-            {project.demo_url && (
-              <a href={project.demo_url} target="_blank" rel="noreferrer"
-                 className="flex items-center gap-1.5 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded-lg px-3 py-1.5">
-                <ExternalLink size={14} /> Demo
-              </a>
-            )}
-          </div>
-        </div>
-
-        {project.summary && (
-          <p className="text-gray-600 text-sm mb-4">{project.summary}</p>
-        )}
-
-        {project.tech_stack?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {project.tech_stack.map(t => (
-              <span key={t} className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">{t}</span>
-            ))}
-          </div>
-        )}
-
-        {project.results && (
-          <div className="bg-green-50 border border-green-100 rounded-lg p-3 mb-4">
-            <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">Results</p>
-            <p className="text-sm text-green-800">{project.results}</p>
-          </div>
-        )}
-
-        {project.images?.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {project.images.map(img => (
-              <img
-                key={img.id}
-                src={`/${img.file_path}`}
-                alt={img.caption || ''}
-                className="rounded-lg h-20 w-full object-cover"
-              />
-            ))}
-          </div>
-        )}
-
-        {project.description && (
-          <>
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-800"
-            >
-              {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              {expanded ? 'Hide details' : 'Show full details'}
-            </button>
-            {expanded && (
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <MarkdownView content={project.description} />
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
+const LINK_ICON = { linkedin: Linkedin, github: Github }
 
 export default function PublicPortfolioPage() {
-  const { token, slug } = useParams()
+  const { token } = useParams()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError]     = useState(null)
+  const [error, setError]     = useState(false)
+  const [modal, setModal]     = useState(null)
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const endpoint = token ? `/share/view/${token}` : `/share/slug/${slug}`
-        const { data } = await api.get(endpoint)
-        setProfile(data)
-      } catch (err) {
-        setError(err.response?.data?.detail || 'Portfolio not found')
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [token, slug])
+    api.get(`/profile/public/${token}`)
+      .then(r => setProfile(r.data))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
+  }, [token])
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin w-10 h-10 border-2 border-primary-500 border-t-transparent rounded-full" />
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="spinner" />
     </div>
   )
-
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-4xl mb-4">🔒</p>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Portfolio Not Found</h1>
-        <p className="text-gray-500">{error}</p>
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center text-center px-6">
+      <div>
+        <p className="text-5xl mb-4">🔒</p>
+        <h2 className="text-xl font-bold text-gray-200 mb-2">Portfolio Not Found</h2>
+        <p className="text-sm text-gray-600 font-mono">// invalid or expired share token</p>
       </div>
     </div>
   )
 
   const featured = profile.projects?.filter(p => p.is_featured) || []
-  const regular  = profile.projects?.filter(p => !p.is_featured) || []
-  const allProjects = [...featured, ...regular]
-
-  const linkIcons = { linkedin: Linkedin, github: Github, website: Globe }
+  const rest     = profile.projects?.filter(p => !p.is_featured) || []
+  const all      = [...featured, ...rest]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="flex items-start gap-6">
-            {/* Avatar */}
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0 overflow-hidden">
-              {profile.profile_photo
-                ? <img src={`/${profile.profile_photo}`} alt="" className="w-full h-full object-cover" />
-                : profile.user?.full_name?.[0] || 'U'
-              }
+    <div className="min-h-screen bg-gray-950 text-gray-300">
+      {/* Top bar */}
+      <div className="border-b border-gray-800 bg-gray-900">
+        <div className="max-w-3xl mx-auto px-6 py-3 flex items-center gap-2">
+          <Terminal size={12} className="text-blue-500" />
+          <span className="text-[11px] font-mono text-gray-600">PortfolioHub · WeCloudData</span>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
+        {/* Hero */}
+        <div className="flex items-start gap-5">
+          {profile.avatar_url ? (
+            <img src={profile.avatar_url} alt=""
+              className="w-16 h-16 rounded-full object-cover border-2 border-gray-800 flex-shrink-0" />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center text-xl font-bold text-gray-600 flex-shrink-0">
+              {profile.full_name?.[0]}
             </div>
-
-            {/* Info */}
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-white mb-1">{profile.user?.full_name}</h1>
-              {profile.headline && (
-                <p className="text-primary-300 text-lg mb-3">{profile.headline}</p>
+          )}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold text-gray-100 mb-0.5">{profile.full_name}</h1>
+            {profile.headline && (
+              <p className="text-sm font-mono text-blue-400 mb-2">{profile.headline}</p>
+            )}
+            <div className="flex flex-wrap gap-3 text-xs text-gray-600 mb-3">
+              {profile.location      && <span className="flex items-center gap-1"><MapPin size={10} />{profile.location}</span>}
+              {profile.contact_email && <span className="flex items-center gap-1"><Mail size={10} />{profile.contact_email}</span>}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {profile.social_links?.map(link => {
+                const Icon = LINK_ICON[link.link_type] || ExternalLink
+                return (
+                  <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-400 hover:text-gray-200 text-xs rounded-lg transition-colors font-mono">
+                    <Icon size={11} />{link.label || link.link_type}
+                  </a>
+                )
+              })}
+              {profile.resume && (
+                <a href={profile.resume.file_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600/10 border border-blue-600/30 hover:border-blue-500 text-blue-400 text-xs rounded-lg transition-colors font-mono">
+                  <Download size={11} /> Resume
+                </a>
               )}
+            </div>
+          </div>
+        </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-gray-400 text-sm mb-4">
-                {profile.location && (
-                  <span className="flex items-center gap-1.5">
-                    <MapPin size={14} /> {profile.location}
-                  </span>
-                )}
-                {profile.contact_email && (
-                  <a href={`mailto:${profile.contact_email}`}
-                     className="flex items-center gap-1.5 hover:text-white">
-                    <Mail size={14} /> {profile.contact_email}
+        {/* About */}
+        {profile.bio && (
+          <div className="card">
+            <div className="card-head"><span className="card-comment">// about</span></div>
+            <div className="card-body text-sm text-gray-500 leading-relaxed">{profile.bio}</div>
+          </div>
+        )}
+
+        {/* Skills + Roles */}
+        {(profile.skills?.length > 0 || profile.target_roles?.length > 0) && (
+          <div className="grid grid-cols-3 gap-4">
+            {profile.skills?.length > 0 && (
+              <div className="col-span-2 card">
+                <div className="card-head"><span className="card-comment">// skills[]</span></div>
+                <div className="card-body flex flex-wrap gap-1.5">
+                  {profile.skills.map(s => <span key={s} className="tag">{s}</span>)}
+                </div>
+              </div>
+            )}
+            {profile.target_roles?.length > 0 && (
+              <div className="card">
+                <div className="card-head"><span className="card-comment">// seeking</span></div>
+                <div className="card-body space-y-2">
+                  {profile.target_roles.map(r => (
+                    <span key={r} className="block badge badge-blue text-center">{r}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Projects */}
+        {all.length > 0 && (
+          <div>
+            <p className="section-comment mb-3">// projects[{all.length}]</p>
+            <div className="space-y-3">
+              {all.map(project => (
+                <div key={project.id}
+                  className="card hover:border-gray-700 transition-colors cursor-pointer"
+                  onClick={() => setModal(project)}>
+                  <div className="card-body">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {project.is_featured && <Star size={11} className="text-amber-400 flex-shrink-0" fill="currentColor" />}
+                          <h3 className="text-sm font-semibold text-gray-200">{project.title}</h3>
+                        </div>
+                        {project.summary && <p className="text-xs text-gray-500 mb-2">{project.summary}</p>}
+                        {project.role && (
+                          <p className="text-[10px] font-mono text-gray-700 mb-2">
+                            {project.role}{project.duration && ` · ${project.duration}`}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap gap-1">
+                          {project.tech_stack?.slice(0, 5).map(t => <span key={t} className="tag">{t}</span>)}
+                        </div>
+                      </div>
+                      <div className="flex gap-1.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                        {project.github_url && (
+                          <a href={project.github_url} target="_blank" rel="noopener noreferrer"
+                            className="p-1.5 bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-lg text-gray-500 hover:text-gray-200 transition-colors">
+                            <Github size={12} />
+                          </a>
+                        )}
+                        {project.demo_url && (
+                          <a href={project.demo_url} target="_blank" rel="noopener noreferrer"
+                            className="p-1.5 bg-blue-600/10 border border-blue-600/30 hover:border-blue-500 rounded-lg text-blue-400 transition-colors">
+                            <ExternalLink size={12} />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="text-center text-[10px] font-mono text-gray-800 pt-6">
+          // powered by PortfolioHub · WeCloudData
+        </p>
+      </div>
+
+      {/* Project detail modal */}
+      {modal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={() => setModal(null)}>
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[88vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between p-5 border-b border-gray-800">
+              <div>
+                <h2 className="font-semibold text-gray-100">{modal.title}</h2>
+                {modal.summary && <p className="text-xs text-gray-500 mt-1">{modal.summary}</p>}
+              </div>
+              <button onClick={() => setModal(null)} className="text-gray-600 hover:text-gray-300 mt-1">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 space-y-5">
+              <div className="flex flex-wrap gap-1.5">
+                {modal.tech_stack?.map(t => <span key={t} className="tag">{t}</span>)}
+              </div>
+              {[
+                ['business_problem', 'Problem'],
+                ['solution', 'Solution'],
+                ['architecture', 'Architecture'],
+                ['results', 'Results'],
+              ].filter(([k]) => modal[k]).map(([k, label]) => (
+                <div key={k}>
+                  <p className="section-comment mb-1">// {label.toLowerCase()}</p>
+                  <p className="text-sm text-gray-500 leading-relaxed">{modal[k]}</p>
+                </div>
+              ))}
+              {modal.description && (
+                <div>
+                  <p className="section-comment mb-2">// description</p>
+                  <div className="md-content text-sm">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{modal.description}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
+              {modal.images?.length > 0 && (
+                <div className="grid grid-cols-2 gap-3">
+                  {modal.images.map(img => (
+                    <img key={img.id} src={img.image_url} alt=""
+                      className="rounded-lg w-full h-36 object-cover border border-gray-800" />
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2 pt-2 border-t border-gray-800">
+                {modal.github_url && (
+                  <a href={modal.github_url} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-sm">
+                    <Github size={12} /> GitHub
                   </a>
                 )}
-              </div>
-
-              {/* Social Links */}
-              <div className="flex flex-wrap gap-3">
-                {profile.social_links?.map(link => {
-                  const Icon = linkIcons[link.link_type] || ExternalLink
-                  return (
-                    <a
-                      key={link.id}
-                      href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 text-sm text-gray-300 hover:text-white border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1.5 transition-colors"
-                    >
-                      <Icon size={14} />
-                      {link.label || link.link_type}
-                    </a>
-                  )
-                })}
-                {profile.resume_file && (
-                  <a
-                    href={`/${profile.resume_file}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-3 py-1.5 transition-colors"
-                  >
-                    <FileText size={14} /> Download Resume
+                {modal.demo_url && (
+                  <a href={modal.demo_url} target="_blank" rel="noopener noreferrer" className="btn-primary btn-sm">
+                    <ExternalLink size={12} /> Live Demo
                   </a>
                 )}
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 py-10 space-y-10">
-        {/* About */}
-        {profile.bio && (
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">About</h2>
-            <div className="card">
-              <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
-            </div>
-          </section>
-        )}
-
-        {/* Skills & Roles */}
-        {(profile.skills?.length > 0 || profile.target_roles?.length > 0) && (
-          <section className="grid grid-cols-2 gap-6">
-            {profile.skills?.length > 0 && (
-              <div className="card">
-                <h3 className="font-semibold text-gray-900 mb-3">Technical Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {profile.skills.map(s => (
-                    <span key={s} className="text-sm bg-primary-50 text-primary-700 px-3 py-1 rounded-full border border-primary-100">{s}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {profile.target_roles?.length > 0 && (
-              <div className="card">
-                <h3 className="font-semibold text-gray-900 mb-3">Open To</h3>
-                <div className="flex flex-wrap gap-2">
-                  {profile.target_roles.map(r => (
-                    <span key={r} className="text-sm bg-green-50 text-green-700 px-3 py-1 rounded-full border border-green-100">{r}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* Projects */}
-        {allProjects.length > 0 && (
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
-              Projects ({allProjects.length})
-            </h2>
-            <div className="space-y-6">
-              {allProjects.map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Footer */}
-        <div className="text-center py-6 text-xs text-gray-400 border-t border-gray-200">
-          Built with Portfolio Platform · WeCloudData
-        </div>
-      </div>
+      )}
     </div>
   )
 }
