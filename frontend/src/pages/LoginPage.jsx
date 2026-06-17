@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth'
-import { Terminal, ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 
 const DEMOS = [
   { label: 'student',  email: 'alice@student.com',     pass: 'student123' },
@@ -39,39 +39,35 @@ export default function LoginPage() {
       <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-gray-900 border-r border-gray-800 p-10">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Terminal size={15} className="text-white" />
+            <span className="text-white font-bold text-lg leading-none" style={{ fontFamily: 'Georgia, serif' }}>N</span>
           </div>
-          <span className="text-gray-100 font-semibold text-sm">PortfolioHub</span>
+          <span className="text-gray-100 font-semibold text-sm">NSTEP</span>
         </div>
 
-        {/* Fake code block */}
+        {/* What is NSTEP */}
         <div className="bg-gray-950 border border-gray-800 rounded-xl p-5 font-mono text-xs leading-relaxed">
-          <p className="text-gray-600 mb-3"># portfolio_platform v1.0.0</p>
-          <p><span className="text-purple-400">class</span> <span className="text-cyan-400">Student</span><span className="text-gray-500">:</span></p>
-          <p className="ml-4 text-gray-500">profile    <span className="text-gray-700">=</span> <span className="text-emerald-400">StudentProfile</span>()</p>
-          <p className="ml-4 text-gray-500">projects   <span className="text-gray-700">=</span> <span className="text-emerald-400">List</span>[<span className="text-cyan-400">Project</span>]</p>
-          <p className="ml-4 text-gray-500">resume     <span className="text-gray-700">=</span> <span className="text-amber-400">PDF</span> | <span className="text-amber-400">None</span></p>
-          <p className="ml-4 text-gray-500">share_link <span className="text-gray-700">=</span> <span className="text-blue-400">UUID</span>()</p>
-          <p className="mt-4 ml-4">
-            <span className="text-purple-400">def</span>{' '}
-            <span className="text-blue-400">get_hired</span>
-            <span className="text-gray-500">() </span>
-            <span className="text-gray-700">-&gt;</span>{' '}
-            <span className="text-emerald-400">Offer</span>
-            <span className="text-gray-500">:</span>
+          <p className="text-gray-600 mb-3"></p>
+          <p className="text-gray-300 mb-1">
+            <span className="text-blue-400">NSTEP</span> helps students build a
           </p>
-          <p className="ml-8 text-gray-600">...</p>
+          <p className="text-gray-300 mb-3">professional portfolio, get it reviewed</p>
+          <p className="text-gray-300 mb-4">by a coach, and share it with employers.</p>
+          <p className="text-gray-300 mb-1">--This project was built by</p>
+          <div className="space-y-1.5 border-t border-gray-800 pt-3">
+            <p className="text-gray-500"><span className="text-emerald-400">1.</span> HAMAD ALSUHAIBANI</p>
+            <p className="text-gray-500"><span className="text-emerald-400">2.</span> ABDULMAJEED MAGHRABI</p>
+            <p className="text-gray-500"><span className="text-emerald-400">3.</span> KHALID ALQAHTANI</p>
+          </div>
         </div>
 
         <div className="space-y-2.5">
           {[
-            'FastAPI + SQLAlchemy backend',
-            'JWT authentication & RBAC',
-            'Private token-based share links',
-            'Coach review workflow',
+            '',
+            '',
+            '',
           ].map(f => (
             <div key={f} className="flex items-center gap-2 text-xs text-gray-600">
-              <span className="text-blue-500 font-mono">▸</span>
+              <span className="text-blue-500 font-mono"></span>
               <span>{f}</span>
             </div>
           ))}
@@ -81,7 +77,7 @@ export default function LoginPage() {
       {/* Right — form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
-          <p className="section-comment mb-1">// authenticate()</p>
+          <p className="section-comment mb-1"></p>
           <h1 className="page-title mb-8">Sign In</h1>
 
           <form onSubmit={submit} className="space-y-4 mb-6">

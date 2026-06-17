@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth'
-import { Terminal, ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 
 export default function RegisterPage() {
   const [form, setForm]     = useState({ email: '', password: '', username: '', role: 'student' })
@@ -30,9 +30,9 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2.5 mb-10">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Terminal size={15} className="text-white" />
+            <span className="text-white font-bold text-lg leading-none" style={{ fontFamily: 'Georgia, serif' }}>N</span>
           </div>
-          <span className="text-gray-100 font-semibold text-sm">PortfolioHub</span>
+          <span className="text-gray-100 font-semibold text-sm">NSTEP</span>
         </div>
 
         <p className="section-comment mb-1">// register()</p>

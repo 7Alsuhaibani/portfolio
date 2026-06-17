@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import api from '../utils/api'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { MapPin, Mail, Github, Linkedin, ExternalLink, Download, Star, X, Terminal } from 'lucide-react'
+import { MapPin, Mail, Github, Linkedin, ExternalLink, Download, Star, X } from 'lucide-react'
 
 const LINK_ICON = { linkedin: Linkedin, github: Github }
 
@@ -45,8 +45,8 @@ export default function PublicPortfolioPage() {
       {/* Top bar */}
       <div className="border-b border-gray-800 bg-gray-900">
         <div className="max-w-3xl mx-auto px-6 py-3 flex items-center gap-2">
-          <Terminal size={12} className="text-blue-500" />
-          <span className="text-[11px] font-mono text-gray-600">PortfolioHub · WeCloudData</span>
+          <span className="text-white font-bold text-[11px] leading-none w-4 h-4 bg-blue-600 rounded flex items-center justify-center" style={{ fontFamily: 'Georgia, serif' }}>N</span>
+          <span className="text-[11px] font-mono text-gray-600">NSTEP</span>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ export default function PublicPortfolioPage() {
         )}
 
         <p className="text-center text-[10px] font-mono text-gray-800 pt-6">
-          // powered by PortfolioHub · WeCloudData
+          // powered by NSTEP
         </p>
       </div>
 

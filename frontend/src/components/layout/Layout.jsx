@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import {
   LayoutDashboard, User, FolderGit2, Share2,
-  Eye, LogOut, Users, ChevronRight, Terminal, ClipboardList,
+  Eye, LogOut, Users, ChevronRight, ClipboardList,
 } from 'lucide-react'
 
 export default function Layout() {
@@ -35,11 +35,11 @@ export default function Layout() {
         <div className="px-4 py-5 border-b border-gray-800">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center flex-shrink-0">
-              <Terminal size={13} className="text-white" />
+              <span className="text-white font-bold text-sm leading-none" style={{ fontFamily: 'Georgia, serif' }}>N</span>
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-100 leading-none">PortfolioHub</p>
-              <p className="text-[9px] font-mono text-gray-600 mt-0.5">WeCloudData</p>
+              <p className="text-sm font-bold text-gray-100 leading-none">NSTEP</p>
+              <p className="text-[9px] font-mono text-gray-600 mt-0.5">Portfolio Platform</p>
             </div>
           </div>
         </div>

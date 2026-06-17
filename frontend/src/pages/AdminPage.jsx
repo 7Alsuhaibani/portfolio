@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import api from '../utils/api'
-import { ExternalLink, MessageSquare, X, CheckCircle, Loader2 } from 'lucide-react'
+import useAuth from '../hooks/useAuth'
+import { ExternalLink, MessageSquare, X, CheckCircle, Loader2, Trash2, AlertTriangle } from 'lucide-react'
 
 const S_CLS = {
   draft:          'status-draft',
@@ -18,6 +19,10 @@ export default function AdminPage() {
   const [modal, setModal]     = useState(null)
   const [rf, setRf]           = useState({ feedback: '', status: 'needs_revision' })
   const [saving, setSaving]   = useState(false)
+  const [delTarget, setDelTarget] = useState(null)   // profile pending deletion
+  const [deleting, setDeleting]   = useState(false)
+  const { user } = useAuth()
+  const canDelete = user?.role === 'admin'   // only true admins, not coaches
 
   const load = async (f = '') => {
     setLoading(true)
@@ -42,6 +47,21 @@ export default function AdminPage() {
       setModal(null); load(filter)
     } catch { toast.error('Failed') }
     finally { setSaving(false) }
+  }
+
+  const deletePortfolio = async () => {
+    if (!delTarget) return
+    setDeleting(true)
+    try {
+      await api.delete(`/admin/profiles/${delTarget.id}`)
+      toast.success('Portfolio deleted')
+      setDelTarget(null)
+      load(filter)
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Delete failed')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   const FILTERS = [
@@ -138,6 +158,14 @@ export default function AdminPage() {
                           <MessageSquare size={11} /> Review
                         </button>
                       )}
+                      {canDelete && (
+                        <button
+                          onClick={() => setDelTarget(p)}
+                          title="Delete portfolio"
+                          className="btn-ghost btn-xs px-2 text-red-400 hover:text-red-300 hover:border-red-500/40">
+                          <Trash2 size={11} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -187,6 +215,45 @@ export default function AdminPage() {
               <button onClick={submitReview} disabled={saving || !rf.feedback.trim()} className="btn-primary btn-sm">
                 {saving ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle size={12} />}
                 Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete confirmation modal */}
+      {delTarget && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+                  <AlertTriangle size={16} className="text-red-400" />
+                </div>
+                <div>
+                  <p className="section-comment">// admin.delete()</p>
+                  <h2 className="text-base font-semibold text-gray-100 mt-0.5">Delete portfolio</h2>
+                </div>
+              </div>
+              <button onClick={() => setDelTarget(null)} className="text-gray-600 hover:text-gray-300 mt-1">
+                <X size={17} />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-400 leading-relaxed mb-5">
+              This will permanently remove{' '}
+              <span className="text-gray-200 font-medium">{delTarget.full_name}</span>'s portfolio,
+              including their account, all projects, uploads, links and reviews.
+              This action cannot be undone.
+            </p>
+
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setDelTarget(null)} className="btn-ghost btn-sm">Cancel</button>
+              <button
+                onClick={deletePortfolio}
+                disabled={deleting}
+                className="btn-sm inline-flex items-center gap-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white px-3 py-2 transition-colors disabled:opacity-50">
+                {deleting ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                Delete
               </button>
             </div>
           </div>
