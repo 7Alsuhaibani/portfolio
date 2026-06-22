@@ -162,6 +162,20 @@ export default function ProfileEditPage() {
           <div className="col-span-2 card">
             <div className="card-head"><span className="card-comment">// basic_info</span></div>
             <div className="card-body space-y-4">
+              <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-300 mb-1">
+    Specialization / Theme
+  </label>
+  <select
+    value={form.theme}
+    onChange={(e) => setForm({ ...form, theme: e.target.value })}
+    className="w-full bg-gray-800 border border-gray-700 text-gray-200 rounded px-3 py-2"
+  >
+    <option value="se">Software Engineering</option>
+    <option value="ai">Artificial Intelligence</option>
+  </select>
+</div>
+
               <div>
                 <label className="field-label">Full Name</label>
                 <input className="field-input" value={form.full_name}

@@ -9,6 +9,13 @@ export default function Layout() {
   const { user, logout, isAdmin } = useAuth()
   const navigate = useNavigate()
 
+  // ⭐ تمت إضافة هذا الجزء فقط
+  const themeClass =
+    user?.role === "student" && user?.theme
+      ? `theme-${user.theme}`
+      : ""
+  // ⭐ انتهى التعديل
+
   const doLogout = () => { logout(); navigate('/login') }
 
   const links = isAdmin()
@@ -28,7 +35,8 @@ export default function Layout() {
   const roleColor = { admin: 'text-red-400', coach: 'text-amber-400', student: 'text-blue-400' }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    // ⭐ تمت إضافة themeClass هنا فقط
+    <div className={`${themeClass} flex h-screen overflow-hidden`}>
       {/* ── Sidebar ── */}
       <aside className="w-52 flex-shrink-0 bg-gray-900 border-r border-gray-800 flex flex-col">
         {/* Logo */}

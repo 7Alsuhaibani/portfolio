@@ -41,7 +41,7 @@ export default function PublicPortfolioPage() {
   const all      = [...featured, ...rest]
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-300">
+<div className={`min-h-screen w-full theme-${profile.theme}`}>
       {/* Top bar */}
       <div className="border-b border-gray-800 bg-gray-900">
         <div className="max-w-3xl mx-auto px-6 py-3 flex items-center gap-2">
