@@ -90,7 +90,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="section-comment">// dashboard()</p>
+          <p className="section-comment"> dashboard</p>
           <h1 className="page-title">
             Welcome, <span className="text-blue-400 font-mono">{user?.username}</span>
           </h1>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
         {/* Quick actions */}
         <div className="card">
           <div className="card-head">
-            <span className="card-comment">// quick_actions</span>
+            <span className="card-comment"> quick_actions</span>
           </div>
           <div className="card-body space-y-2">
             <Link to="/projects/new"  className="btn-primary  w-full justify-center btn-sm"><Plus size={12}/>  New Project</Link>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
         {/* Completion checklist */}
         <div className="card">
           <div className="card-head">
-            <span className="card-comment">// profile.completion</span>
+            <span className="card-comment"> profile_completion</span>
             <span className="text-[10px] font-mono text-blue-400">{pct}%</span>
           </div>
           <div className="card-body">
@@ -157,9 +157,9 @@ export default function DashboardPage() {
         {/* Recent projects */}
         <div className="card">
           <div className="card-head">
-            <span className="card-comment">// recent_projects</span>
+            <span className="card-comment">recent_projects</span>
             <Link to="/projects" className="text-[10px] text-blue-500 hover:text-blue-400 font-mono transition-colors">
-              all →
+              all 
             </Link>
           </div>
           <div className="card-body space-y-3">

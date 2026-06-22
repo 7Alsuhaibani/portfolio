@@ -145,7 +145,7 @@ export default function ProjectEditPage() {
       {tab === 'Overview' && (
         <div className="space-y-4">
           <div className="card">
-            <div className="card-head"><span className="card-comment">// project_meta</span></div>
+            <div className="card-head"><span className="card-comment"> project_meta</span></div>
             <div className="card-body space-y-4">
               <div>
                 <label className="field-label">Title *</label>
@@ -183,7 +183,7 @@ export default function ProjectEditPage() {
           </div>
 
           <div className="card">
-            <div className="card-head"><span className="card-comment">// tech_stack[]</span></div>
+            <div className="card-head"><span className="card-comment"> tech_stack</span></div>
             <div className="card-body">
               <div className="input-row mb-3">
                 <input className="field-input mono text-xs flex-1" placeholder="Python, FastAPI, Docker..."
@@ -198,7 +198,7 @@ export default function ProjectEditPage() {
           </div>
 
           <div className="card">
-            <div className="card-head"><span className="card-comment">// skills_used[]</span></div>
+            <div className="card-head"><span className="card-comment"> skills_used</span></div>
             <div className="card-body">
               <div className="input-row mb-3">
                 <input className="field-input text-xs flex-1" placeholder="Machine Learning, Feature Engineering..."
@@ -236,14 +236,14 @@ export default function ProjectEditPage() {
               { key: 'description',      label: 'description (markdown)', ph: '## Overview\n\nDetailed write-up...', rows: 8 },
             ].map(({ key, label, ph, rows }) => (
               <div key={key} className="card">
-                <div className="card-head"><span className="card-comment">// {label}</span></div>
+                <div className="card-head"><span className="card-comment"> {label}</span></div>
                 <div className="card-body">{ta(key, ph, rows)}</div>
               </div>
             ))}
           </div>
           {mdPreview && (
             <div className="card h-fit sticky top-4">
-              <div className="card-head"><span className="card-comment">// preview</span></div>
+              <div className="card-head"><span className="card-comment"> preview</span></div>
               <div className="card-body md-content text-sm">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {form.description || '*Start writing to see preview...*'}
@@ -257,7 +257,7 @@ export default function ProjectEditPage() {
       {/* ── Results ── */}
       {tab === 'Results' && (
         <div className="card">
-          <div className="card-head"><span className="card-comment">// results & impact</span></div>
+          <div className="card-head"><span className="card-comment"> results & impact</span></div>
           <div className="card-body">
             <p className="text-[10px] text-gray-600 font-mono mb-3">
               # Include concrete metrics: accuracy %, latency ms, revenue impact, users served
@@ -270,18 +270,18 @@ export default function ProjectEditPage() {
       {/* ── Media ── */}
       {tab === 'Media' && (
         <div className="card">
-          <div className="card-head"><span className="card-comment">// screenshots[]</span></div>
+          <div className="card-head"><span className="card-comment"> screenshots[]</span></div>
           <div className="card-body">
             {!isEdit && (
               <div className="p-3 mb-4 border border-amber-500/20 bg-amber-500/5 rounded-lg text-xs text-amber-400 font-mono">
-                // Save project first to enable image uploads
+                 Save project first to enable image uploads
               </div>
             )}
             <div {...getRootProps()} className={`drop-zone ${isDragActive ? 'active' : ''} mb-4`}>
               <input {...getInputProps()} />
               <Upload size={24} className="text-gray-700 mx-auto mb-2" />
               <p className="text-sm text-gray-600">{isDragActive ? 'Drop!' : 'Drop screenshots or click'}</p>
-              <p className="text-xs text-gray-700 mt-1 font-mono">// PNG, JPG, GIF</p>
+              <p className="text-xs text-gray-700 mt-1 font-mono"> PNG, JPG, GIF</p>
             </div>
             {images.length > 0 && (
               <div className="grid grid-cols-3 gap-3">

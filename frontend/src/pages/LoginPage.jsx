@@ -54,7 +54,7 @@ export default function LoginPage() {
           <p className="text-gray-300 mb-4">by a coach, and share it with employers.</p>
           <p className="text-gray-300 mb-1">--This project was built by</p>
           <div className="space-y-1.5 border-t border-gray-800 pt-3">
-            <p className="text-gray-500"><span className="text-emerald-400">1.</span> HAMAD ALSUHAIBANI</p>
+            <p className="text-gray-500"><span className="text-emerald-400">1.</span> alice ALSUHAIBANI</p>
             <p className="text-gray-500"><span className="text-emerald-400">2.</span> ABDULMAJEED MAGHRABI</p>
             <p className="text-gray-500"><span className="text-emerald-400">3.</span> KHALID ALQAHTANI</p>
           </div>

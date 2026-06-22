@@ -25,7 +25,7 @@ export default function ProjectsPage() {
     <div className="p-8 max-w-5xl">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <p className="section-comment">// projects.list()</p>
+          <p className="section-comment"> projects_list</p>
           <h1 className="page-title">My Projects</h1>
         </div>
         <Link to="/projects/new" className="btn-primary">
@@ -37,7 +37,7 @@ export default function ProjectsPage() {
         <div className="card text-center py-20">
           <FolderGit2 size={40} className="text-gray-800 mx-auto mb-3" />
           <p className="text-gray-600 text-sm mb-1">No projects yet</p>
-          <p className="text-gray-700 text-xs mb-6 font-mono">// projects[] = []</p>
+          <p className="text-gray-700 text-xs mb-6 font-mono"> projects = []</p>
           <Link to="/projects/new" className="btn-primary inline-flex">
             <Plus size={13} /> Add First Project
           </Link>

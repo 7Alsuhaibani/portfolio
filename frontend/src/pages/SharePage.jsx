@@ -51,12 +51,12 @@ export function SharePage() {
 
   return (
     <div className="p-8 max-w-3xl">
-      <p className="section-comment">// portfolio.share()</p>
+      <p className="section-comment"> portfolio_share</p>
       <h1 className="page-title mb-8">Share Portfolio</h1>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="card">
-          <div className="card-head"><span className="card-comment">// private_share_link</span></div>
+          <div className="card-head"><span className="card-comment"> private_share_link</span></div>
           <div className="card-body">
             <div className="flex items-center gap-2 p-3 bg-gray-800 border border-gray-700 rounded-lg mb-3 overflow-hidden">
               <span className="text-[11px] font-mono text-gray-500 truncate flex-1">{url}</span>
@@ -74,13 +74,13 @@ export function SharePage() {
               <RefreshCw size={11} /> Regenerate link
             </button>
             <p className="text-center text-[10px] text-gray-700 font-mono mt-2">
-              // token-based private access
+               token_based private access
             </p>
           </div>
         </div>
 
         <div className="card">
-          <div className="card-head"><span className="card-comment">// review_status</span></div>
+          <div className="card-head"><span className="card-comment">  review_status</span></div>
           <div className="card-body">
             <div className="flex items-center gap-2.5 mb-3">
               <SIcon size={15} className={sm.color} />
@@ -102,12 +102,12 @@ export function SharePage() {
       </div>
 
       <div className="card">
-        <div className="card-head"><span className="card-comment">// sharing_tips[]</span></div>
+        <div className="card-head"><span className="card-comment">sharing_tips</span></div>
         <div className="card-body grid grid-cols-3 gap-3">
           {[
-            { icon: '📧', title: 'Email Signature', tip: 'Add "Portfolio: [link]" to your email footer' },
-            { icon: '💼', title: 'LinkedIn Bio',    tip: 'Paste the link in your LinkedIn About section' },
-            { icon: '📄', title: 'Resume',          tip: 'Include next to your contact information' },
+            { icon: '', title: 'Email Signature', tip: 'Add "Portfolio: [link]" to your email footer' },
+            { icon: '', title: 'LinkedIn Bio',    tip: 'Paste the link in your LinkedIn About section' },
+            { icon: '', title: 'Resume',          tip: 'Include next to your contact information' },
           ].map(item => (
             <div key={item.title} className="p-3.5 bg-gray-850 border border-gray-800 rounded-lg">
               <span className="text-lg mb-2 block">{item.icon}</span>

@@ -29,7 +29,7 @@ export default function PublicPortfolioPage() {
   if (error) return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center text-center px-6">
       <div>
-        <p className="text-5xl mb-4">🔒</p>
+        <p className="text-5xl mb-4"></p>
         <h2 className="text-xl font-bold text-gray-200 mb-2">Portfolio Not Found</h2>
         <p className="text-sm text-gray-600 font-mono">// invalid or expired share token</p>
       </div>

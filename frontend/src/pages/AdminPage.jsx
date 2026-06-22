@@ -191,8 +191,8 @@ export default function AdminPage() {
 
             <div className="flex gap-2 mb-4">
               {[
-                { v: 'published',      l: '✅ Publish',        on: 'border-emerald-600 bg-emerald-600/10 text-emerald-400' },
-                { v: 'needs_revision', l: '⚠️ Needs Revision', on: 'border-amber-600 bg-amber-600/10 text-amber-400'      },
+                { v: 'published',      l: ' Publish',        on: 'border-emerald-600 bg-emerald-600/10 text-emerald-400' },
+                { v: 'needs_revision', l: ' Needs Revision', on: 'border-amber-600 bg-amber-600/10 text-amber-400'      },
               ].map(opt => (
                 <button key={opt.v} onClick={() => setRf(f => ({ ...f, status: opt.v }))}
                   className={`flex-1 py-2 rounded-xl border text-xs font-medium transition-all ${

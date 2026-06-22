@@ -37,7 +37,7 @@ for u in users_data:
 
 profiles_data = [
     {
-        "full_name": "Alice Johnson",
+        "full_name": "alice Johnson",
         "headline": "Machine Learning Engineer | Python | TensorFlow",
         "bio": "Passionate ML engineer with experience in NLP and computer vision. Looking for roles in AI-driven startups.",
         "location": "Toronto, ON",
@@ -85,7 +85,7 @@ for user, p in zip(student_users, profiles_data):
                     ("github",   f"https://github.com/{user.username}")]:
         db.add(models.SocialLink(profile_id=profile.id, link_type=lt, url=url, label=lt.capitalize()))
 
-# Projects for Alice
+# Projects for alice
 for p_data in [
     {
         "title": "Customer Churn Prediction System",

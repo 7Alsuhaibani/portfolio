@@ -139,7 +139,7 @@ export default function ProfileEditPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <p className="section-comment">// profile.edit()</p>
+          <p className="section-comment">profile_edit</p>
           <h1 className="page-title">Edit Profile</h1>
         </div>
         <button onClick={save} disabled={saving} className="btn-primary">
@@ -160,7 +160,7 @@ export default function ProfileEditPage() {
       {tab === 'Info' && (
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 card">
-            <div className="card-head"><span className="card-comment">// basic_info</span></div>
+            <div className="card-head"><span className="card-comment">basic_info</span></div>
             <div className="card-body space-y-4">
               <div className="mb-4">
   <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -216,7 +216,7 @@ export default function ProfileEditPage() {
 
           {/* Avatar */}
           <div className="card h-fit">
-            <div className="card-head"><span className="card-comment">// avatar</span></div>
+            <div className="card-head"><span className="card-comment"> avatar</span></div>
             <div className="card-body text-center">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt=""
@@ -240,7 +240,7 @@ export default function ProfileEditPage() {
       {tab === 'Skills' && (
         <div className="space-y-4">
           <div className="card">
-            <div className="card-head"><span className="card-comment">// skills[]</span></div>
+            <div className="card-head"><span className="card-comment"> skills[]</span></div>
             <div className="card-body">
               <div className="input-row mb-4">
                 <input className="field-input mono text-xs flex-1" placeholder="Add skill..."
@@ -274,7 +274,7 @@ export default function ProfileEditPage() {
           </div>
 
           <div className="card">
-            <div className="card-head"><span className="card-comment">// target_roles[]</span></div>
+            <div className="card-head"><span className="card-comment"> target_roles[]</span></div>
             <div className="card-body">
               <div className="input-row mb-3">
                 <input className="field-input flex-1" placeholder="e.g. Data Scientist"
@@ -300,7 +300,7 @@ export default function ProfileEditPage() {
       {/* ── Resume ── */}
       {tab === 'Resume' && (
         <div className="card">
-          <div className="card-head"><span className="card-comment">// resume</span></div>
+          <div className="card-head"><span className="card-comment"> resume</span></div>
           <div className="card-body">
             {profile?.resume && (
               <div className="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl mb-5">
@@ -332,7 +332,7 @@ export default function ProfileEditPage() {
       {/* ── Links ── */}
       {tab === 'Links' && (
         <div className="card">
-          <div className="card-head"><span className="card-comment">// social_links[]</span></div>
+          <div className="card-head"><span className="card-comment">social_links[]</span></div>
           <div className="card-body">
             <div className="grid grid-cols-4 gap-2 mb-5">
               <select className="field-select text-xs col-span-1" value={newLink.link_type}

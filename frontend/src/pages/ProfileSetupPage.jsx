@@ -23,14 +23,14 @@ export default function ProfileSetupPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <p className="section-comment">// profile.setup()</p>
+        <p className="section-comment">profile.setup()</p>
         <h1 className="page-title mb-2">Set Up Your Profile</h1>
         <p className="text-sm text-gray-600 mb-8">You can change all of this later</p>
 
         <form onSubmit={submit} className="card p-6 space-y-4">
           <div>
             <label className="field-label">Full Name *</label>
-            <input className="field-input" placeholder="Ahmed Al-Suhaibani"
+            <input className="field-input" placeholder="Hamad Al-Suhaibani"
               value={form.full_name}
               onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
               required />

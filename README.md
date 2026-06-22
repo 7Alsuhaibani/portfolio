@@ -1,11 +1,11 @@
-# 📁 Portfolio Showcase Platform
+#  Portfolio Showcase Platform
 **WeCloudData — Student Portfolio Management System**
 
 A full-stack web application for students to create professional portfolios and share them with employers.
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 portfolio-platform/
@@ -33,9 +33,9 @@ portfolio-platform/
         ├── App.jsx              # Router + protected routes
         ├── main.jsx             # Entry point
         ├── index.css            # Global styles
-        ├── context/
-        │   └── AuthContext.jsx  # Global auth state
-        ├── services/
+        ├── hooks/
+        │   └── Layout.jsx  # Global auth state
+        ├── utils/
         │   └── api.js           # Axios API layer
         └── pages/
             ├── LoginPage.jsx
@@ -52,7 +52,7 @@ portfolio-platform/
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Backend (Terminal 1)
 ```bash
@@ -74,7 +74,7 @@ Frontend runs at: **http://localhost:5173**
 
 ---
 
-## 👤 Demo Accounts
+##  Demo Accounts
 
 | Role    | Email                        | Password    |
 |---------|------------------------------|-------------|
@@ -86,7 +86,7 @@ Frontend runs at: **http://localhost:5173**
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 ### For Students
 - ✅ Professional profile with bio, skills, location, target roles
@@ -114,7 +114,7 @@ Frontend runs at: **http://localhost:5173**
 
 ---
 
-## 🔑 API Endpoints
+##  API Endpoints
 
 ### Auth
 - `POST /api/auth/register` — Create account
@@ -152,7 +152,7 @@ Frontend runs at: **http://localhost:5173**
 
 ---
 
-## 🗄️ Data Models
+##  Data Models
 
 **User** → role (admin/student/coach/employer)  
 **StudentProfile** → full_name, headline, bio, skills[], target_roles[], share_token  
@@ -164,7 +164,7 @@ Frontend runs at: **http://localhost:5173**
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer     | Technology              |
 |-----------|-------------------------|
